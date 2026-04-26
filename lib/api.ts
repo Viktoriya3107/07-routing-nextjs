@@ -18,7 +18,7 @@ export const fetchNotes = async (
   search: string,
   tag?: string
 ): Promise<NotesResponse> => {
-  const { data } = await api.get('/notes', {
+  const { data } = await api.get<NotesResponse>('/notes', {
     params: { page, search, tag },
   });
 
@@ -26,7 +26,7 @@ export const fetchNotes = async (
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const { data } = await api.get(`/notes/${id}`);
+  const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 };
 
@@ -34,12 +34,12 @@ export const createNote = async (payload: {
   title: string;
   content: string;
   tag: NoteTag;
-}) => {
-  const { data } = await api.post('/notes', payload);
+}): Promise<Note> => {
+  const { data } = await api.post<Note>('/notes', payload);
   return data;
 };
 
-export const deleteNote = async (id: string) => {
-  const { data } = await api.delete(`/notes/${id}`);
+export const deleteNote = async (id: string): Promise<Note> => {
+  const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 };

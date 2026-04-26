@@ -1,17 +1,20 @@
-import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import {
+  QueryClient,
+  dehydrate,
+  HydrationBoundary,
+} from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NotesWithTagClient from './Notes.client';
 
 export default async function Page({
   params,
 }: {
-  params: {
-    slug?: string[];
-  };
+  params: Promise<{ slug: string[] }>;
 }) {
-  const rawTag = params.slug?.[0];
+  const { slug } = await params;
 
-  // 🔥 нормалізація
+  const rawTag = slug?.[0];
+
   const normalizedTag =
     rawTag === 'all' || !rawTag ? undefined : rawTag;
 

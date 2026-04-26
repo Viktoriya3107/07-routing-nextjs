@@ -10,7 +10,7 @@ export default function Header() {
         </Link>
 
         <div className={css.links}>
-          <Link href="/notes">Notes</Link>
+          <Link href="/notes/filter/all">Notes</Link>
         </div>
       </nav>
     </header>
