@@ -2,12 +2,12 @@ import Link from 'next/link';
 
 export default function DefaultSidebar() {
   const tags = [
-    'all',
-    'todo',
-    'work',
-    'personal',
-    'meeting',
-    'shopping',
+    'All',
+    'Todo',
+    'Work',
+    'Personal',
+    'Meeting',
+    'Shopping',
   ];
 
   return (

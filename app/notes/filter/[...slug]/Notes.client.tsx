@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 
@@ -15,16 +15,33 @@ type Props = {
 
 export default function NotesWithTagClient({ tag }: Props) {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
   const [isOpen, setIsOpen] = useState(false);
 
   const activeTag = tag === 'all' ? undefined : tag;
 
+  // debounce + reset page
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+      setPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const { data } = useQuery({
-    queryKey: ['notes', activeTag, page, search],
-    queryFn: () => fetchNotes(page, search, activeTag),
+    queryKey: ['notes', activeTag, page, debouncedSearch],
+    queryFn: () => fetchNotes(page, debouncedSearch, activeTag),
     placeholderData: keepPreviousData,
   });
+
+  // ✅ safe defaults (вирішує TS undefined проблему)
+  const notes = data?.notes ?? [];
+  const totalPages = data?.totalPages ?? 0;
 
   return (
     <>
@@ -34,20 +51,18 @@ export default function NotesWithTagClient({ tag }: Props) {
 
       <input
         type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
         placeholder="Search..."
       />
 
-      <NoteList notes={data?.notes ?? []} />
+      <NoteList notes={notes} />
 
-      {data?.totalPages && data.totalPages > 1 && (
+      {totalPages > 1 && (
         <Pagination
-          pageCount={data.totalPages}
+          pageCount={totalPages}
           currentPage={page}
-          onPageChange={({ selected }) =>
-            setPage(selected + 1)
-          }
+          onPageChange={({ selected }) => setPage(selected + 1)}
         />
       )}
 
